@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Company HQ</title>
+<style>
+:root {
+  --bg:   #0b0b0f;
+  --bg2:  #12121a;
+  --bg3:  #1a1a24;
+  --bg4:  #080810;
+  --bd:   rgba(255,255,255,0.06);
+  --bd2:  rgba(255,255,255,0.14);
+  --t1:   #eeedf4;
+  --t2:   #8886a0;
+  --t3:   #46455a;
+  --pu:   #8b5cf6;
+  --pu2:  #a78bfa;
+  --tl:   #10b981;
+  --tl2:  #34d399;
+  --co:   #f97316;
+  --co2:  #fb923c;
+  --am:   #f59e0b;
+  --am2:  #fbbf24;
+  --blue: #3b82f6;
+  --blu2: #93c5fd;
+  --grn:  #16a34a;
+  --amb:  #d97706;
+  --red:  #dc2626;
+  --r:    10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Hiragino Sans','Noto Sans JP',-apple-system,sans-serif;
+  background:var(--bg);color:var(--t1);font-size:12px;line-height:1.4;
+  min-width:320px;max-width:420px;margin:0 auto;
+  display:flex;flex-direction:column;min-height:100vh;
+}
+
+/* ── HEADER ── */
+header{
+  flex-shrink:0;background:var(--bg);border-bottom:0.5px solid var(--bd);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;z-index:30;
+}
+.hdr-logo{
+  width:28px;height:28px;border-radius:6px;
+  background:linear-gradient(135deg,#6d28d9,#2563eb);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:#fff;letter-spacing:-1px;
+  flex-shrink:0;
+}
+.hdr-text{flex:1;}
+.hdr-title{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--t1);}
+.hdr-sub{font-size:10px;color:var(--t2);margin-top:1px;}
+.live{
+  display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;
+  padding:3px 9px;border-radius:20px;flex-shrink:0;
+  border:0.5px solid rgba(22,163,74,.3);background:rgba(22,163,74,.1);color:#22c55e;
+  transition:all .3s;
+}
+.live.on{background:rgba(59,130,246,.12);color:#93c5fd;border-color:rgba(59,130,246,.3);}
+.live-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.live.on .live-dot{animation:blink .7s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.15;}}
+
+/* ── PHASE BAR ── */
+.pbar{
+  flex-shrink:0;display:none;align-items:center;gap:7px;
+  padding:6px 14px;border-bottom:0.5px solid rgba(59,130,246,.15);
+  background:rgba(59,130,246,.04);font-size:10px;color:var(--blu2);min-height:28px;
+}
+.pbar.on{display:flex;}
+.spinner{
+  width:9px;height:9px;border-radius:50%;
+  border:1.5px solid rgba(147,197,253,.25);border-top-color:var(--blu2);
+  animation:spin .8s linear infinite;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── CONTROLS ── */
+.ctrl{
+  flex-shrink:0;display:flex;gap:6px;padding:8px 14px;
+  border-bottom:0.5px solid var(--bd);background:var(--bg);
+}
+.btn{
+  flex:1;padding:6px 4px;border-radius:7px;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .15s;border:0.5px solid;font-family:inherit;
+}
+.btn-go{background:rgba(59,130,246,.14);color:var(--blu2);border-color:rgba(59,130,246,.3);}
+.btn-go:hover{background:rgba(59,130,246,.24);}
+.btn-go:disabled{opacity:.35;cursor:not-allowed;}
+.btn-sub{background:var(--bg3);color:var(--t2);border-color:var(--bd2);}
+.btn-sub:hover{background:var(--bg2);color:var(--t1);}
+
+/* ── AGENTS ── */
+.agents{flex:1;overflow-y:auto;padding-bottom:6px;}
+.agents::-webkit-scrollbar{width:3px;}
+.agents::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+.sec{padding:8px 14px 0;}
+.sh{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 0;border-bottom:0.5px solid var(--bd);margin-bottom:6px;
+}
+.lbadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:7px;flex-shrink:0;letter-spacing:.04em;}
+.ldesc{font-size:10px;color:var(--t3);margin-left:auto;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:4px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:4px;}
+
+/* ── CARD ── */
+.card{
+  background:var(--bg2);border:0.5px solid var(--bd);border-radius:var(--r);
+  padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  position:relative;cursor:pointer;
+  transition:border-color .35s,box-shadow .35s,background .2s;user-select:none;
+}
+.card:hover{background:var(--bg3);}
+.card[data-s=thinking]{border-color:rgba(217,119,6,.6);box-shadow:0 0 10px rgba(217,119,6,.07);}
+.card[data-s=working] {border-color:rgba(59,130,246,.7);box-shadow:0 0 12px rgba(59,130,246,.12);}
+.card[data-s=done]    {border-color:rgba(22,163,74,.5); box-shadow:0 0 8px rgba(22,163,74,.08);}
+.card[data-s=error]   {border-color:rgba(220,38,38,.6); box-shadow:0 0 10px rgba(220,38,38,.1);}
+
+/* status dot */
+.sdot{position:absolute;top:7px;right:7px;width:5px;height:5px;border-radius:50%;background:var(--t3);transition:background .3s;}
+.card[data-s=thinking] .sdot{background:var(--amb);animation:blink 1s infinite;}
+.card[data-s=working]  .sdot{background:var(--blue);animation:blink .7s infinite;}
+.card[data-s=done]     .sdot{background:var(--grn);}
+.card[data-s=error]    .sdot{background:var(--red);animation:blink 1.3s infinite;}
+
+/* avatar ring */
+.aw{position:relative;width:40px;height:40px;flex-shrink:0;}
+.ar{
+  position:absolute;inset:-3px;border-radius:50%;
+  border:1.5px solid transparent;transition:border-color .3s,opacity .3s;
+  opacity:0;pointer-events:none;
+}
+.card[data-s=thinking] .ar{border-color:var(--amb);opacity:.8;animation:rpulse 1.2s infinite;}
+.card[data-s=working]  .ar{border-color:var(--blue);opacity:1; animation:rpulse 1s infinite;}
+.card[data-s=done]     .ar{border-color:var(--grn);opacity:.7;}
+.card[data-s=error]    .ar{border-color:var(--red);opacity:.8;animation:rpulse 1.5s infinite;}
+@keyframes rpulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.12);opacity:.25;}}
+.av svg{width:40px;height:40px;display:block;border-radius:50%;}
+
+/* card text */
+.cn{font-size:10px;font-weight:600;color:var(--t1);text-align:center;line-height:1.25;}
+.cr{font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;text-align:center;letter-spacing:.03em;}
+.ct{font-size:9px;color:var(--blu2);text-align:center;min-height:11px;line-height:1.3;}
+.lpu .cr{background:rgba(139,92,246,.15);color:var(--pu2);}
+.ltl .cr{background:rgba(16,185,129,.14);color:var(--tl2);}
+.lco .cr{background:rgba(249,115,22,.13);color:var(--co2);}
+.lam .cr{background:rgba(245,158,11,.14);color:var(--am2);}
+
+/* ── CHAT ── */
+.chat{
+  flex-shrink:0;height:230px;display:flex;flex-direction:column;
+  border-top:0.5px solid var(--bd);background:var(--bg4);
+  position:sticky;bottom:0;z-index:20;
+}
+.chdr{
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-bottom:0.5px solid var(--bd);
+}
+.chdr-t{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.06em;}
+.ccnt{
+  font-size:10px;color:var(--t3);margin-left:auto;
+  background:var(--bg2);border:0.5px solid var(--bd);
+  padding:1px 7px;border-radius:8px;
+}
+.cfeed{flex:1;overflow-y:auto;padding:4px 0;}
+.cfeed::-webkit-scrollbar{width:2px;}
+.cfeed::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:1px;}
+.empty{padding:24px 14px;font-size:11px;color:var(--t3);text-align:center;line-height:1.7;}
+.msg{padding:5px 14px;border-left:2px solid transparent;transition:background .15s;}
+.msg:hover{background:var(--bg2);}
+.msg[data-l=pu]{border-left-color:rgba(139,92,246,.5);}
+.msg[data-l=tl]{border-left-color:rgba(16,185,129,.45);}
+.msg[data-l=co]{border-left-color:rgba(249,115,22,.45);}
+.msg[data-l=am]{border-left-color:rgba(245,158,11,.45);}
+.mh{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.mav{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;}
+.mav[data-l=pu]{background:rgba(139,92,246,.18);color:var(--pu2);}
+.mav[data-l=tl]{background:rgba(16,185,129,.18);color:var(--tl2);}
+.mav[data-l=co]{background:rgba(249,115,22,.18);color:var(--co2);}
+.mav[data-l=am]{background:rgba(245,158,11,.18);color:var(--am2);}
+.mn{font-size:10px;font-weight:700;}
+.mn[data-l=pu]{color:var(--pu2);}
+.mn[data-l=tl]{color:var(--tl2);}
+.mn[data-l=co]{color:var(--co2);}
+.mn[data-l=am]{color:var(--am2);}
+.mr{font-size:9px;color:var(--t3);}
+.mt{font-size:9px;color:var(--t3);margin-left:auto;font-variant-numeric:tabular-nums;}
+.mb{font-size:10px;color:var(--t2);padding-left:23px;line-height:1.55;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-logo">AI</div>
+  <div class="hdr-text">
+    <div class="hdr-title">AI DEVELOPMENT COMPANY</div>
+    <div class="hdr-sub" id="hSub">全 18 名 — 待機中</div>
+  </div>
+  <div class="live" id="liveB">
+    <div class="live-dot"></div>
+    <span id="aCnt">0</span>&nbsp;稼働
+  </div>
+</header>
+
+<div class="pbar" id="pbar">
+  <div class="spinner"></div>
+  <span id="ptext"></span>
+</div>
+
+<div class="ctrl">
+  <button class="btn btn-go" id="btnGo" onclick="startSim()">▶ プロジェクト開始</button>
+  <button class="btn btn-sub" onclick="resetAll()">リセット</button>
+  <button class="btn btn-sub" onclick="showHelp()">使い方</button>
+</div>
+
+<div class="agents" id="ag"></div>
+
+<div class="chat">
+  <div class="chdr">
+    <div class="chdr-t">AGENT LOG</div>
+    <div class="ccnt" id="ccnt">0 件</div>
+  </div>
+  <div class="cfeed" id="feed">
+    <div class="empty">プロジェクト開始後に<br>エージェント間の会話が流れます</div>
+  </div>
+</div>
+
+<script>
+var H={dk:'#1A1208',br:'#6B3D1E',ab:'#7D3320',gy:'#909090',bk:'#0D0D14',ch:'#4A2010'};
+var SK={lt:'#F5D5B8',md:'#EDB98A',wm:'#F0C090',tn:'#D4956A'};
+var AB={pu:'#1e1535',tl:'#0d2b20',co:'#2d1409',am:'#2d2008'};
+
+function mf(t,h,s,b){
+  var p=['<circle cx="22" cy="22" r="22" fill="'+b+'"/>'];
+  var FO='<ellipse cx="22" cy="26" rx="10" ry="12" fill="'+s+'"/>';
+  var EY='<circle cx="17.5" cy="23.5" r="1.3" fill="#1A1A1A"/><circle cx="26.5" cy="23.5" r="1.3" fill="#1A1A1A"/>';
+  var SM='<path d="M19.5 30 Q22 32.5 24.5 30" stroke="#9B6535" stroke-width="1.2" fill="none" stroke-linecap="round"/>';
+  var HC='<path d="M12 24 Q12 11 22 11 Q32 11 32 24" fill="'+h+'"/>';
+  if(t==='short_m'){p.push(FO,HC);}
+  else if(t==='glasses_m'){
+    p.push(FO,HC);
+    p.push('<rect x="14.5" y="21" width="6.5" height="4.5" rx="1.5" fill="none" stroke="#666" stroke-width="1"/>');
+    p.push('<rect x="23" y="21" width="6.5" height="4.5" rx="1.5" fill="none" stroke="#666" stroke-width="1"/>');
+    p.push('<line x1="21" y1="23" x2="23" y2="23" stroke="#666" stroke-width=".8"/>');
+  }
+  else if(t==='spiky_m'){
+    p.push(FO,'<path d="M12 24 Q12 13 22 13 Q32 13 32 24" fill="'+h+'"/>');
+    p.push('<polygon points="17,13 15.5,5 20,12" fill="'+h+'"/>');
+    p.push('<polygon points="22,11 21.5,3.5 25.5,11" fill="'+h+'"/>');
+    p.push('<polygon points="27,13 28.5,5 25,12" fill="'+h+'"/>');
+  }
+  else if(t==='buzz_m'){p.push(FO,'<path d="M13 25 Q13 14 22 14 Q31 14 31 25" fill="'+h+'"/>');}
+  else if(t==='gray_m'){
+    p.push(FO,HC);
+    p.push('<path d="M14.5 21.5 Q16 19 18.5 19.5" stroke="#777" stroke-width="1.4" fill="none" stroke-linecap="round"/>');
+    p.push('<path d="M29.5 21.5 Q28 19 25.5 19.5" stroke="#777" stroke-width="1.4" fill="none" stroke-linecap="round"/>');
+    p.push('<path d="M12 19 Q13.5 14.5 15.5 12" stroke="#C0C0C0" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+    p.push('<path d="M32 19 Q30.5 14.5 28.5 12" stroke="#C0C0C0" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+  }
+  else if(t==='long_f'){
+    p.push('<path d="M9 32 Q9 9 22 9 Q35 9 35 32 L35 44 L9 44 Z" fill="'+h+'"/>',FO);
+    p.push('<path d="M12 21 Q12 9 22 9 Q32 9 32 21" fill="'+h+'"/>');
+  }
+  else if(t==='bob_f'){
+    p.push('<path d="M10 32 Q10 10 22 10 Q34 10 34 32 Q34 40 22 40 Q10 40 10 32 Z" fill="'+h+'"/>',FO);
+    p.push('<path d="M12 21 Q12 10 22 10 Q32 10 32 21" fill="'+h+'"/>');
+  }
+  else if(t==='bun_f'){
+    p.push(FO,'<circle cx="22" cy="8" r="5.5" fill="'+h+'"/>');
+    p.push('<path d="M17 12 Q22 14 27 12" stroke="'+h+'" stroke-width="3" fill="none" stroke-linecap="round"/>');
+    p.push('<path d="M12 22 Q12 12 22 12 Q32 12 32 22" fill="'+h+'"/>');
+  }
+  else if(t==='ponytail_f'){
+    p.push('<path d="M30 16 Q41 19 39 31 Q37 38 33 40" stroke="'+h+'" stroke-width="6" fill="none" stroke-linecap="round"/>',FO);
+    p.push('<path d="M12 22 Q12 11 22 11 Q32 11 32 22" fill="'+h+'"/>');
+  }
+  else if(t==='braid_f'){
+    p.push('<path d="M14 16 Q3 19 5 31 Q7 38 11 40" stroke="'+h+'" stroke-width="6" fill="none" stroke-linecap="round"/>',FO);
+    p.push('<path d="M12 22 Q12 11 22 11 Q32 11 32 22" fill="'+h+'"/>');
+  }
+  p.push(EY,SM);
+  return '<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">'+p.join('')+'</svg>';
+}
+
+var LY=[
+  {id:'pu',name:'プランナー層',desc:'方針策定',bb:'rgba(139,92,246,.12)',bc:'#a78bfa',lb:AB.pu,g:'g5',cls:'lpu',
+   ag:[{id:'ceo',n:'中島 雄一',r:'CEO',f:'glasses_m',h:H.dk,s:SK.lt,av:'中'},
+       {id:'pdm',n:'田中 彩花',r:'PdM',f:'bob_f',h:H.ab,s:SK.md,av:'田'},
+       {id:'cto',n:'佐藤 健太',r:'CTO',f:'spiky_m',h:H.bk,s:SK.wm,av:'佐'},
+       {id:'cfo',n:'山田 恵子',r:'CFO',f:'bun_f',h:H.dk,s:SK.lt,av:'山'},
+       {id:'pm',n:'鈴木 大輔',r:'PM',f:'short_m',h:H.br,s:SK.md,av:'鈴'}]},
+  {id:'tl',name:'ジェネレーター層',desc:'設計・実装',bb:'rgba(16,185,129,.1)',bc:'#34d399',lb:AB.tl,g:'g5',cls:'ltl',
+   ag:[{id:'designer',n:'伊藤 美咲',r:'Designer',f:'long_f',h:H.br,s:SK.lt,av:'伊'},
+       {id:'frontend',n:'渡辺 拓也',r:'Frontend',f:'short_m',h:H.ch,s:SK.md,av:'渡'},
+       {id:'backend',n:'高橋 誠',r:'Backend',f:'buzz_m',h:H.bk,s:SK.wm,av:'高'},
+       {id:'infra',n:'小林 亮',r:'Infra',f:'buzz_m',h:H.dk,s:SK.tn,av:'小'},
+       {id:'db',n:'加藤 直樹',r:'DB',f:'short_m',h:H.br,s:SK.lt,av:'加'}]},
+  {id:'co',name:'エバリュエーター層',desc:'品質保証',bb:'rgba(249,115,22,.1)',bc:'#fb923c',lb:AB.co,g:'g4',cls:'lco',
+   ag:[{id:'linter',n:'吉田 春香',r:'Linter',f:'ponytail_f',h:H.dk,s:SK.lt,av:'吉'},
+       {id:'security',n:'木村 剛',r:'Security',f:'buzz_m',h:H.bk,s:SK.tn,av:'木'},
+       {id:'tester',n:'林 優子',r:'Tester',f:'bob_f',h:H.ab,s:SK.md,av:'林'},
+       {id:'reviewer',n:'清水 博',r:'Reviewer',f:'gray_m',h:H.gy,s:SK.wm,av:'清'}]},
+  {id:'am',name:'サポート',desc:'デプロイ・文書',bb:'rgba(245,158,11,.1)',bc:'#fbbf24',lb:AB.am,g:'g4',cls:'lam',
+   ag:[{id:'voice',n:'松本 沙織',r:'Voice',f:'long_f',h:H.dk,s:SK.lt,av:'松'},
+       {id:'deployer',n:'井上 隆',r:'Deployer',f:'short_m',h:H.ch,s:SK.wm,av:'井'},
+       {id:'packager',n:'山口 奈々',r:'Packager',f:'braid_f',h:H.br,s:SK.md,av:'山'},
+       {id:'specwriter',n:'中村 智子',r:'Spec',f:'bun_f',h:H.dk,s:SK.lt,av:'中'}]},
+];
+
+var AMAP={};
+LY.forEach(function(L){L.ag.forEach(function(a){AMAP[a.id]={n:a.n,r:a.r,av:a.av,l:L.id};});});
+
+function render(){
+  document.getElementById('ag').innerHTML=LY.map(function(L){
+    return '<div class="sec">'
+      +'<div class="sh"><span class="lbadge" style="background:'+L.bb+';color:'+L.bc+'">'+L.name+'</span>'
+      +'<span class="ldesc">'+L.desc+'</span></div>'
+      +'<div class="'+L.g+'">'
+      +L.ag.map(function(a){
+        var st=gst(a.id);
+        return '<div class="card '+L.cls+'" id="c-'+a.id+'" data-s="'+st.s+'" onclick="cyc(\''+a.id+'\')" title="クリックでステータス切替">'
+          +'<div class="sdot"></div>'
+          +'<div class="aw"><div class="ar"></div><div class="av">'+mf(a.f,a.h,a.s,L.lb)+'</div></div>'
+          +'<div class="cn">'+a.n.replace(' ','<br>')+'</div>'
+          +'<div class="cr">'+a.r+'</div>'
+          +'<div class="ct" id="t-'+a.id+'">'+st.t+'</div>'
+          +'</div>';
+      }).join('')+'</div></div>';
+  }).join('');
+  upd();
+}
+
+var ST={};
+var CY=['idle','thinking','working','done','error'];
+var CT={idle:'',thinking:'思考中...',working:'作業中',done:'完了 ✓',error:'差し戻し'};
+function load(){try{var d=localStorage.getItem('aihq2');if(d)ST=JSON.parse(d);}catch(e){}}
+function save(){try{localStorage.setItem('aihq2',JSON.stringify(ST));}catch(e){}}
+function gst(id){return ST[id]||{s:'idle',t:''};}
+function cyc(id){var st=gst(id);set(id,CY[(CY.indexOf(st.s)+1)%CY.length],null);}
+function set(id,s,txt){
+  ST[id]={s:s,t:txt!==null?txt:CT[s]};
+  var c=document.getElementById('c-'+id),t=document.getElementById('t-'+id);
+  if(c)c.dataset.s=s;
+  if(t)t.textContent=ST[id].t;
+  upd();save();
+}
+function upd(){
+  var n=0;
+  LY.forEach(function(L){L.ag.forEach(function(a){var s=gst(a.id).s;if(s==='thinking'||s==='working')n++;});});
+  document.getElementById('aCnt').textContent=n;
+  var lb=document.getElementById('liveB');
+  lb.classList.toggle('on',n>0);
+  document.getElementById('hSub').textContent=n>0?n+'名が稼働中':'全18名 — 待機中';
+}
+function setP(txt){
+  var b=document.getElementById('pbar'),p=document.getElementById('ptext');
+  if(txt){b.classList.add('on');p.textContent=txt;}else{b.classList.remove('on');}
+}
+
+var mc=0,t0=0;
+function addMsg(id,body){
+  var info=AMAP[id];if(!info)return;
+  var el=Math.floor((Date.now()-t0)/1000);
+  var mm=Math.floor(el/60),ss=el%60;
+  var ts=(mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss;
+  var feed=document.getElementById('feed');
+  if(mc===0)feed.innerHTML='';
+  mc++;
+  var d=document.createElement('div');
+  d.className='msg';d.dataset.l=info.l;
+  d.innerHTML='<div class="mh">'
+    +'<div class="mav" data-l="'+info.l+'">'+info.av+'</div>'
+    +'<span class="mn" data-l="'+info.l+'">'+info.n+'</span>'
+    +'<span class="mr">'+info.r+'</span>'
+    +'<span class="mt">'+ts+'</span>'
+    +'</div><div class="mb">'+body+'</div>';
+  feed.appendChild(d);
+  feed.scrollTop=feed.scrollHeight;
+  document.getElementById('ccnt').textContent=mc+' 件';
+}
+
+// [ms, id, status, taskText, message(null=no msg)]
+var TL=[
+  [0,'_phase',null,'STEP 1: CEO — 依頼受付・要件解釈',null],
+  [0,'voice','working','音声変換中','音声ファイルを受け取りました。Whisperで文字起こしを実行中です。'],
+  [300,'ceo','thinking','依頼解析中...','プロジェクトを受領しました。依頼内容を解析しています。3案を策定します。'],
+  [1900,'voice','done','完了 ✓','文字起こし完了。構造化データをCEO中島に転送しました。'],
+  [2500,'ceo','working','プラン作成中','プランA（MVP優先・2週間）、B（フル機能・4週間）、C（段階リリース）を作成しました。推奨はプランAです。'],
+  [4800,'ceo','done','完了 ✓','PdM田中にプランAを引き渡します。要件定義をお願いします。'],
+  [5500,'_phase',null,'STEP 2: PdM — 仕様策定',null],
+  [5500,'pdm','thinking','要件整理中...','CEO中島よりプランAを受領しました。ユーザーストーリーの洗い出しを開始します。'],
+  [7200,'pdm','working','仕様書作成中','機能要件14項目・非機能要件6項目を整理しました。画面遷移図を作成中です。'],
+  [9800,'pdm','done','完了 ✓','要件定義書を完成させました。CTO佐藤・CFO山田に技術設計と見積もりを依頼します。'],
+  [10500,'_phase',null,'STEP 3: CTO & CFO — 技術設計・見積（並列）',null],
+  [10500,'cto','thinking','アーキ検討中...','PdM田中の仕様書を確認しました。最適なアーキテクチャを検討します。'],
+  [10500,'cfo','thinking','コスト試算中...','PdM田中の仕様書から工数試算を開始します。機能複雑度を評価中です。'],
+  [12000,'cto','working','アーキ設計中','技術スタック確定：Next.js 14 + TypeScript + Supabase + Vercel。インフラ設計図を作成中です。'],
+  [11800,'cfo','working','見積作成中','Frontend: 40h / Backend: 55h / Infra: 25h / DB: 20h。総工数140h、費用試算中です。'],
+  [15800,'cto','done','完了 ✓','設計書を完成させました。PM鈴木に実装計画の策定を依頼します。'],
+  [16300,'cfo','done','完了 ✓','見積書完成。推定コスト ¥840,000。ROI試算を含め報告書を作成しました。'],
+  [17200,'_phase',null,'STEP 4: PM — 実装計画',null],
+  [17200,'pm','thinking','タスク整理中...','CTO・CFOのアウトプットを統合してWBSを作成します。'],
+  [18800,'pm','working','WBS作成中','タスクを32項目に分解しました。クリティカルパスを特定し、並列作業を最大化します。'],
+  [21500,'pm','done','完了 ✓','スケジュール確定。設計・実装フェーズの開始を各担当者に通知しました。'],
+  [22500,'_phase',null,'STEP 5: 設計・実装フェーズ（並列）',null],
+  [22500,'designer','thinking','UI設計中...','PM鈴木からGOサインを受けました。UIデザインに着手します。'],
+  [22500,'db','thinking','DB設計中...','PM鈴木のWBSを受領。論理設計から始めます。'],
+  [24000,'designer','working','ワイヤー制作','12画面のワイヤーフレームを作成中。デザインシステムを定義しました。'],
+  [23800,'db','working','ER図作成中','論理設計完了。15テーブルのER図を作成し、インデックス最適化を検討中です。'],
+  [25000,'frontend','thinking','実装準備中...','Designerの仕様書を受け取りました。Atomic DesignでReactコンポーネントを設計します。'],
+  [25000,'backend','thinking','実装準備中...','PdMの仕様とCTOの設計書に基づきAPIを設計します。'],
+  [25000,'infra','thinking','インフラ設計中...','CTO設計書に基づきVercel + Supabaseの構成を設定します。'],
+  [26500,'frontend','working','UI実装中','コンポーネント実装中。Atomic Design準拠で再利用性を確保しています。残り8コンポーネント。'],
+  [26500,'backend','working','API実装中','RESTful API 23エンドポイントを実装中。認証・認可ロジックも組み込んでいます。'],
+  [27000,'infra','working','インフラ構築中','Vercel + Supabase環境を構築中。CI/CDパイプラインをGitHub Actionsで設定しています。'],
+  [29000,'designer','done','完了 ✓','Figmaデザイン完成。Frontend渡辺にデザイントークンとコンポーネント仕様を共有しました。'],
+  [29500,'db','done','完了 ✓','DBスキーマ確定。マイグレーションファイルとシードデータを準備。Backend高橋に共有します。'],
+  [31500,'infra','done','完了 ✓','本番・ステージング環境の構築が完了しました。環境変数の設定も完了です。'],
+  [32000,'frontend','done','完了 ✓','UI実装完了。Backend高橋とAPI結合テストを実施し、正常動作を確認しました。'],
+  [32300,'backend','done','完了 ✓','バックエンド実装完了。Swagger APIドキュメントも作成しました。'],
+  [33200,'_phase',null,'STEP 6: 品質チェック（Hook 自動実行）',null],
+  [33200,'linter','working','構文チェック中','ESLint + Prettierを実行中... 軽微な修正18件を自動修正しました。型エラー0件。'],
+  [35400,'linter','done','完了 ✓','構文チェックPASS。Security木村にパスします。'],
+  [36000,'security','working','脆弱性スキャン中','OWASP Top 10チェック中... SQLインジェクション・XSS対策を確認。依存パッケージに既知の脆弱性なし。'],
+  [38200,'security','done','完了 ✓','セキュリティチェック全項目PASS。Tester林にテスト実行を依頼します。'],
+  [38800,'tester','working','テスト実行中','ユニットテスト142件、E2Eテスト38件を実行中... テストカバレッジ: 91%。'],
+  [41800,'tester','done','完了 ✓','全テストPASS。カバレッジ91%達成。Reviewer清水に最終レビューを依頼します。'],
+  [42500,'reviewer','working','コードレビュー中','テスト結果レポートを確認。アーキテクチャ・コード品質・セキュリティを総合評価中...'],
+  [46000,'reviewer','done','承認 ✓','最終レビュー完了。全項目で品質基準を満たしています。デプロイを正式に承認します。'],
+  [46800,'_phase',null,'STEP 7: デプロイ・納品',null],
+  [46800,'deployer','working','デプロイ中...','Netlifyへのデプロイを開始します。ビルド中... 本番環境への反映が完了しました。'],
+  [46800,'specwriter','working','仕様書作成中','最終仕様書を作成中。API仕様書・アーキテクチャ図・セットアップガイドを含めます。'],
+  [46800,'packager','working','パッケージング中','ZIPパッケージを作成中。README・.env.template・起動スクリプトを同梱しています。'],
+  [50000,'deployer','done','完了 ✓','デプロイ完了。本番URLでの動作確認も完了しました。'],
+  [50500,'specwriter','done','完了 ✓','仕様書一式が完成しました。PDFとMarkdown形式で出力します。'],
+  [50200,'packager','done','完了 ✓','納品パッケージの作成が完了しました。'],
+  [51500,'_phase',null,'全工程完了 — プロジェクト納品 🎉',null],
+];
+
+var tos=[],running=false;
+function startSim(){
+  if(running)return;
+  running=true;t0=Date.now();mc=0;
+  document.getElementById('feed').innerHTML='';
+  document.getElementById('ccnt').textContent='0 件';
+  document.getElementById('btnGo').disabled=true;
+  TL.forEach(function(ev){
+    tos.push(setTimeout(function(){
+      if(ev[1]==='_phase'){setP(ev[3]);}
+      else{set(ev[1],ev[2],ev[3]);if(ev[4])addMsg(ev[1],ev[4]);}
+    },ev[0]));
+  });
+  tos.push(setTimeout(function(){
+    running=false;
+    document.getElementById('btnGo').disabled=false;
+  },52000));
+}
+function resetAll(){
+  tos.forEach(clearTimeout);tos=[];running=false;
+  document.getElementById('btnGo').disabled=false;
+  ST={};save();setP(null);
+  LY.forEach(function(L){L.ag.forEach(function(a){set(a.id,'idle','');});});
+  document.getElementById('feed').innerHTML='<div class="empty">プロジェクト開始後に<br>エージェント間の会話が流れます</div>';
+  document.getElementById('ccnt').textContent='0 件';mc=0;
+}
+function showHelp(){
+  alert('【使い方】\n\n■ カードをクリック\n待機→思考→作業→完了→差戻し の順でステータスが切り替わります。エージェントチームを動かす際に手動で更新できます。\n\n■ プロジェクト開始ボタン\n全ワークフローのシミュレーション＋会話ログを約50秒で実行します。\n\n■ ステータスは自動保存されます（ブラウザを閉じても保持）。\n\n■ 並べ方（Mac）\nウィンドウ緑ボタン長押し → 画面右側に並べる\n\n■ 並べ方（Windows）\nWin+← / Win+→ でスナップ配置');
+}
+load();render();
+</script>
+</body>
+</html>
